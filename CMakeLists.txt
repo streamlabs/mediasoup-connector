@@ -89,6 +89,9 @@ add_library(webrtc-testlibs STATIC
 if(MSVC)
     # MSVC specific warning suppressions
     target_compile_options(webrtc-testlibs PRIVATE "$<IF:$<CONFIG:Debug>,/MTd,/MT>" /wd4100 /wd4244 /wd4267)
+
+	target_compile_options(webrtc-testlibs PRIVATE /WX- /wd4996)
+    target_compile_definitions(webrtc-testlibs PRIVATE _SILENCE_CXX20_IS_POD_DEPRECATION_WARNING)
 elseif(APPLE)
     # Apple Clang specific warning suppressions
     target_compile_options(webrtc-testlibs PRIVATE "-Wno-unused-parameter")
@@ -108,9 +111,6 @@ target_compile_definitions(webrtc-testlibs PUBLIC ${webrtc_COMMON_COMPILE_DEFS})
 # ----------------------
 # -- mediasoup PLUGIN --
 # ----------------------
-
-#project(mediasoup-connector)
-#set(MODULE_DESCRIPTION "Streamlabs Join")
 
 if(MSVC)
 	set(mediasoup-connector_PLATFORM_DEPS
@@ -150,6 +150,9 @@ add_library(OBS::mediasoup-connector ALIAS mediasoup-connector)
 
 if(MSVC)
 	target_compile_options(mediasoup-connector PRIVATE "$<IF:$<CONFIG:Debug>,/MTd,/MT>" /wd4100)
+    target_compile_options(mediasoup-connector PRIVATE /WX- /wd4068 /wd4244 /wd4996)
+    target_compile_definitions(mediasoup-connector PRIVATE _SILENCE_CXX20_DEPRECATION_WARNING)
+
 elseif(APPLE)
 	target_compile_options(mediasoup-connector PRIVATE "-Wno-unused-parameter")
 endif()
@@ -231,5 +234,4 @@ endif()
 # set_target_properties(webrtc-testlibs PROPERTIES EXCLUDE_FROM_DEFAULT_BUILD_DEBUG TRUE)
 # set_target_properties(mediasoup-connector PROPERTIES EXCLUDE_FROM_DEFAULT_BUILD_DEBUG TRUE)
 
-# setup_plugin_target(mediasoup-connector)
 set_target_properties_obs(mediasoup-connector PROPERTIES FOLDER plugins PREFIX "")
