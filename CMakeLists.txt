@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.22...3.25)
 
-legacy_check()
-
 # Project configuration.
 set(WEBRTC_INCLUDE_PATH "" CACHE STRING "webrtc include path")
 set(WEBRTC_LIB_PATH "" CACHE STRING "webrtc .lib path")
@@ -77,7 +75,7 @@ set(webrtc-test_SOURCES
 	${WEBRTC_INCLUDE_PATH}/test/testsupport/file_utils_override.cc
 	${WEBRTC_INCLUDE_PATH}/test/testsupport/ivf_video_frame_generator.cc
 	${WEBRTC_INCLUDE_PATH}/test/vcm_capturer.cc)
-	
+
 include_directories(${WEBRTC_INCLUDE_PATH})
 include_directories(${WEBRTC_INCLUDE_PATH}/third_party/abseil-cpp)
 include_directories(${WEBRTC_INCLUDE_PATH}/third_party/libyuv/include)
@@ -179,7 +177,7 @@ target_compile_definitions(mediasoup-connector PUBLIC ${webrtc_COMMON_COMPILE_DE
 
 if(APPLE)
 	include_directories(mediasoup-connector mac)
-	
+
 	find_library(APPLE_CoreServices CoreServices)
 	find_library(APPLE_CoreFoundation CoreFoundation)
 	find_library(APPLE_AudioUnit AudioUnit)
@@ -187,7 +185,7 @@ if(APPLE)
 	find_library(APPLE_CoreAudio CoreAudio)
 	find_library(APPLE_Foundation Foundation)
 	find_library(APPLE_ApplicationServices ApplicationServices)
-	
+
 	if (NOT APPLE_CoreServices)
 		message(FATAL_ERROR "APPLE_CoreServices not found")
 	endif()
@@ -227,7 +225,7 @@ if(APPLE)
 	target_link_libraries(mediasoup-connector ${APPLE_CoreAudio})
 	target_link_libraries(mediasoup-connector ${APPLE_Foundation})
 	target_link_libraries(mediasoup-connector ${APPLE_ApplicationServices})
-	
+
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++ -Wno-deprecated-declarations -Wno-deprecated-builtins")
 endif()
 
