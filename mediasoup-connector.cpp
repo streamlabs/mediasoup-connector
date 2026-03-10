@@ -588,7 +588,8 @@ bool obs_module_load(void)
 	mediasoup_filter_video_s.destroy = msoup_fsvideo_destroy;
 	mediasoup_filter_video_s.update = msoup_fsvideo_update_settings;
 	mediasoup_filter_video_s.get_defaults = msoup_fsvideo_defaults;
-	mediasoup_filter_video_s.get_properties = msoup_fsvideo_properties, mediasoup_filter_video_s.video_tick = msoup_fsvideo_video_tick;
+	mediasoup_filter_video_s.get_properties = msoup_fsvideo_properties;
+	mediasoup_filter_video_s.video_tick = msoup_fsvideo_video_tick;
 	mediasoup_filter_video_s.video_render = msoup_fsvideo_video_render;
 	mediasoup_filter_video_s.filter_add = msoup_fsvideo_filter_add;
 	mediasoup_filter_video_s.filter_remove = msoup_fsvideo_filter_remove;

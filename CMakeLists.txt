@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.22...3.25)
 
-legacy_check()
-
 # Project configuration.
 set(WEBRTC_INCLUDE_PATH "" CACHE STRING "webrtc include path")
 set(WEBRTC_LIB_PATH "" CACHE STRING "webrtc .lib path")
