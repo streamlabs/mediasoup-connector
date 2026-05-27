@@ -53,6 +53,7 @@ static void *msoup_create(obs_data_t *settings, obs_source_t *source)
 	proc_handler_add(ph, "void func_stop_sender(in string input, out string output)", ConnectorFrontApi::func_stop_sender, data);
 	proc_handler_add(ph, "void func_stop_consumer(in string input, out string output)", ConnectorFrontApi::func_stop_consumer, data);
 	proc_handler_add(ph, "void func_stop_producer(in string input, out string output)", ConnectorFrontApi::func_stop_producer, data);
+	proc_handler_add(ph, "void func_reset_device(in string input, out string output)", ConnectorFrontApi::func_reset_device, data);
 
 	obs_source_set_audio_active(source, true);
 
