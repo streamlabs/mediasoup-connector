@@ -502,8 +502,14 @@ void MediaSoupTransceiver::StopReceiveTransport()
 {
 	std::lock_guard<std::recursive_mutex> grd(m_transportMutex);
 
-	if (m_recvTransport)
+	if (m_recvTransport) {
 		m_recvTransport->Close();
+
+		// Drop any cached connection state so a transport reusing this
+		// pointer address can't inherit a stale "completed" entry.
+		std::lock_guard<std::mutex> stateGrd(m_stateMutex);
+		m_connectionState.erase(m_recvTransport);
+	}
 
 	{
 		std::lock_guard<std::recursive_mutex> grd(m_consumerMutex);
@@ -547,8 +553,14 @@ void MediaSoupTransceiver::StopSendTransport()
 	if (m_audioThread.joinable())
 		m_audioThread.join();
 
-	if (m_sendTransport)
+	if (m_sendTransport) {
 		m_sendTransport->Close();
+
+		// Drop any cached connection state so a transport reusing this
+		// pointer address can't inherit a stale "completed" entry.
+		std::lock_guard<std::mutex> stateGrd(m_stateMutex);
+		m_connectionState.erase(m_sendTransport);
+	}
 
 	{
 		std::lock_guard<std::recursive_mutex> grd(m_producerMutex);
