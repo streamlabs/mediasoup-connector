@@ -7,6 +7,9 @@
 #include "ConnectorFrontApi.h"
 
 #include "api/create_peerconnection_factory.h"
+#include "api/audio/create_audio_device_module.h"
+#include "api/environment/environment.h"
+#include "api/environment/environment_factory.h"
 #include "api/audio_codecs/builtin_audio_decoder_factory.h"
 #include "api/audio_codecs/builtin_audio_encoder_factory.h"
 #include "api/video_codecs/builtin_video_decoder_factory.h"
@@ -98,7 +101,7 @@ rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> MediaSoupTransceiver:
 		return nullptr;
 	}
 
-	m_MyProducerAudioDeviceModule = new rtc::RefCountedObject<MyProducerAudioDeviceModule>{};
+	m_MyProducerAudioDeviceModule = webrtc::make_ref_counted<MyProducerAudioDeviceModule>();
 
 	auto factory = webrtc::CreatePeerConnectionFactory(m_networkThread_Producer.get(), m_workerThread_Producer.get(), m_signalingThread_Producer.get(),
 							   m_MyProducerAudioDeviceModule, webrtc::CreateBuiltinAudioEncoderFactory(),
@@ -129,8 +132,8 @@ rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> MediaSoupTransceiver:
 	}
 
 	std::thread thr([&]() {
-		m_DefaultDeviceCore_TaskQueue = webrtc::CreateDefaultTaskQueueFactory();
-		m_DefaultDeviceCore = webrtc::AudioDeviceModule::Create(webrtc::AudioDeviceModule::kPlatformDefaultAudio, m_DefaultDeviceCore_TaskQueue.get());
+		webrtc::Environment env = webrtc::CreateEnvironment();
+		m_DefaultDeviceCore = webrtc::CreateAudioDeviceModule(env, webrtc::AudioDeviceModule::kPlatformDefaultAudio);
 	});
 
 	thr.join();
@@ -295,12 +298,11 @@ rtc::scoped_refptr<webrtc::VideoTrackInterface>
 MediaSoupTransceiver::CreateProducerVideoTrack(rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> factory, const std::string &label,
 					       std::shared_ptr<MediaSoupMailbox> ptr)
 {
-	// The factory handles cleanup of this cstyle pointer
-	auto videoTrackSource = new rtc::RefCountedObject<FrameGeneratorCapturerVideoTrackSource>(FrameGeneratorCapturerVideoTrackSource::Config(),
+	auto videoTrackSource = webrtc::make_ref_counted<FrameGeneratorCapturerVideoTrackSource>(FrameGeneratorCapturerVideoTrackSource::Config(),
 												  webrtc::Clock::GetRealTimeClock(), false, ptr);
 	videoTrackSource->Start();
 
-	return factory->CreateVideoTrack(rtc::CreateRandomUuid(), videoTrackSource);
+	return factory->CreateVideoTrack(videoTrackSource, rtc::CreateRandomUuid());
 }
 
 bool MediaSoupTransceiver::CreateAudioProducerTrack(const std::string &id)
@@ -928,7 +930,7 @@ void MediaSoupTransceiver::MyVideoSink::OnFrame(const webrtc::VideoFrame &video_
 }
 
 void MediaSoupTransceiver::MyAudioSink::OnData(const void *audio_data, int bits_per_sample, int sample_rate, size_t number_of_channels, size_t number_of_frames,
-					       absl::optional<int64_t> absolute_capture_timestamp_ms)
+					       std::optional<int64_t> absolute_capture_timestamp_ms)
 {
 	size_t number_of_bytes = 0;
 

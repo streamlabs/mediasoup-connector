@@ -1,5 +1,7 @@
 #pragma once
 
+#include "webrtc_compat.h"
+
 #include "rtc_base/logging.h"
 
 #include <obs-module.h>

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "webrtc_compat.h"
+
 #include "api/task_queue/default_task_queue_factory.h"
 #include "modules/audio_device/include/audio_device_default.h"
 #include "rtc_base/event.h"

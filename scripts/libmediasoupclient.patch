@@ -1,24 +1,25 @@
---- a/CMakeLists.txt	2024-07-11 20:38:24.134524700 -0400
-+++ b/CMakeLists.txt	2024-07-07 22:19:15.810910700 -0400
+Streamlabs build patch for libmediasoupclient 3.5.0 (Windows / MSVC static CRT).
+
+- Bump cmake_minimum_required to 3.20 so policy CMP0091 is NEW and the
+  CMAKE_MSVC_RUNTIME_LIBRARY setting below is actually honored.
+- Force the static MSVC runtime (/MT[d]) to match how the OBS plugin links.
+
+3.5.0 already sets CMAKE_CXX_STANDARD 20, so the old C++17->20 hunk is dropped.
+libmediasoupclient #189 (webrtc::PortInterface::Network vs webrtc::Network at M140)
+only breaks non-MSVC builds; the macOS pass must handle it in the non-MSVC flags branch.
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
 @@ -1,4 +1,4 @@
 -cmake_minimum_required(VERSION 3.14)
 +cmake_minimum_required(VERSION 3.20)
- 
+
  project(mediasoupclient LANGUAGES CXX)
- 
-@@ -17,7 +17,7 @@
- )
- 
- # C++ standard requirements.
--set(CMAKE_CXX_STANDARD 17)
-+set(CMAKE_CXX_STANDARD 20)
- set(CMAKE_CXX_STANDARD_REQUIRED ON)
- 
- # Project options.
+
 @@ -56,6 +56,8 @@
  	endif()
  endif()
- 
+
 +set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 +
  if (${MEDIASOUPCLIENT_BUILD_TESTS})
