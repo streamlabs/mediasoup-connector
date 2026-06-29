@@ -152,7 +152,10 @@ if(MSVC)
     target_compile_definitions(mediasoup-connector PRIVATE _SILENCE_CXX20_DEPRECATION_WARNING)
 
 elseif(APPLE)
-	target_compile_options(mediasoup-connector PRIVATE "-Wno-unused-parameter")
+	target_compile_options(mediasoup-connector PRIVATE "-Wno-unused-parameter" "-Wno-deprecated-literal-operator")
+	set_target_xcode_properties(
+		mediasoup-connector
+		PROPERTIES WARNING_CFLAGS "-Wvla -Wformat-security -Wno-error=shorten-64-to-32 -Wno-error=deprecated-literal-operator")
 endif()
 
 
