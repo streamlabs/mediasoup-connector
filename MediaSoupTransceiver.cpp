@@ -41,9 +41,18 @@ bool MediaSoupTransceiver::LoadDevice(json &routerRtpCapabilities, json &output_
 {
 	std::lock_guard<std::recursive_mutex> grd(m_transportMutex);
 
+	// Idempotent: if the device is already loaded (e.g. JS reissued func_load_device
+	// on a socket reconnect within the same Collab Cam session), return the existing
+	// capabilities instead of erroring. A truly fresh device requires func_reset_device.
 	if (m_device != nullptr) {
-		m_lastErorMsg = "Device already exists";
-		return false;
+		try {
+			output_deviceRtpCapabilities = m_device->GetRtpCapabilities();
+			output_deviceSctpCapabilities = m_device->GetSctpCapabilities();
+		} catch (...) {
+			m_lastErorMsg = "Failed to read existing mediasoupclient::Device capabilities";
+			return false;
+		}
+		return true;
 	}
 
 	m_device = std::make_unique<mediasoupclient::Device>();
@@ -493,8 +502,14 @@ void MediaSoupTransceiver::StopReceiveTransport()
 {
 	std::lock_guard<std::recursive_mutex> grd(m_transportMutex);
 
-	if (m_recvTransport)
+	if (m_recvTransport) {
 		m_recvTransport->Close();
+
+		// Drop any cached connection state so a transport reusing this
+		// pointer address can't inherit a stale "completed" entry.
+		std::lock_guard<std::mutex> stateGrd(m_stateMutex);
+		m_connectionState.erase(m_recvTransport);
+	}
 
 	{
 		std::lock_guard<std::recursive_mutex> grd(m_consumerMutex);
@@ -508,8 +523,16 @@ void MediaSoupTransceiver::StopReceiveTransport()
 		}
 	}
 
-	while (ReceiverConnected())
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	{
+		const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+		while (ReceiverConnected()) {
+			if (std::chrono::steady_clock::now() >= deadline) {
+				blog(LOG_WARNING, "StopReceiveTransport: receive transport did not leave 'completed' state within 2s; proceeding with delete");
+				break;
+			}
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		}
+	}
 
 	delete m_recvTransport;
 	m_recvTransport = nullptr;
@@ -530,8 +553,14 @@ void MediaSoupTransceiver::StopSendTransport()
 	if (m_audioThread.joinable())
 		m_audioThread.join();
 
-	if (m_sendTransport)
+	if (m_sendTransport) {
 		m_sendTransport->Close();
+
+		// Drop any cached connection state so a transport reusing this
+		// pointer address can't inherit a stale "completed" entry.
+		std::lock_guard<std::mutex> stateGrd(m_stateMutex);
+		m_connectionState.erase(m_sendTransport);
+	}
 
 	{
 		std::lock_guard<std::recursive_mutex> grd(m_producerMutex);
@@ -545,8 +574,16 @@ void MediaSoupTransceiver::StopSendTransport()
 		m_dataProducers.clear();
 	}
 
-	while (SenderConnected())
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	{
+		const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+		while (SenderConnected()) {
+			if (std::chrono::steady_clock::now() >= deadline) {
+				blog(LOG_WARNING, "StopSendTransport: send transport did not leave 'completed' state within 2s; proceeding with delete");
+				break;
+			}
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		}
+	}
 
 	delete m_sendTransport;
 	m_sendTransport = nullptr;

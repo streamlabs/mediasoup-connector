@@ -49,6 +49,14 @@ void ConnectorFrontApi::func_stop_producer(void *data, calldata_t *cd)
 	MediaSoupInterface::instance().getTransceiver()->StopProducerById(input);
 }
 
+void ConnectorFrontApi::func_reset_device(void *data, calldata_t *cd)
+{
+	UNUSED_PARAMETER(data);
+	UNUSED_PARAMETER(cd);
+	blog(LOG_WARNING, "func_reset_device");
+	MediaSoupInterface::instance().reset();
+}
+
 void ConnectorFrontApi::func_connect_result(void *data, calldata_t *cd)
 {
 	std::string input = calldata_string(cd, "input");
