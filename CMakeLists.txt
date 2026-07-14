@@ -76,9 +76,9 @@ set(webrtc-test_SOURCES
 	${WEBRTC_INCLUDE_PATH}/test/testsupport/ivf_video_frame_generator.cc
 	${WEBRTC_INCLUDE_PATH}/test/vcm_capturer.cc)
 	
-include_directories(${WEBRTC_INCLUDE_PATH})
-include_directories(${WEBRTC_INCLUDE_PATH}/third_party/abseil-cpp)
-include_directories(${WEBRTC_INCLUDE_PATH}/third_party/libyuv/include)
+include_directories(SYSTEM ${WEBRTC_INCLUDE_PATH})
+include_directories(SYSTEM ${WEBRTC_INCLUDE_PATH}/third_party/abseil-cpp)
+include_directories(SYSTEM ${WEBRTC_INCLUDE_PATH}/third_party/libyuv/include)
 
 add_library(webrtc-testlibs STATIC
 	${webrtc-test_SOURCES})
@@ -93,6 +93,7 @@ if(MSVC)
 elseif(APPLE)
     # Apple Clang specific warning suppressions
     target_compile_options(webrtc-testlibs PRIVATE "-Wno-unused-parameter")
+    target_compile_options(webrtc-testlibs PRIVATE "-include" "${CMAKE_CURRENT_SOURCE_DIR}/absl_lifetime_patch.h")
 else()
     # GCC/Clang on other systems
     target_compile_options(webrtc-testlibs PRIVATE "-Wno-unused-parameter")
@@ -137,9 +138,9 @@ include_directories(${OPENSSL_INCLUDE_DIR})
 include_directories(${MEDIASOUP_INCLUDE_PATH})
 include_directories(${MEDIASOUP_SDP_INCLUDE_PATH})
 
-include_directories(${WEBRTC_INCLUDE_PATH})
-include_directories(${WEBRTC_INCLUDE_PATH}/third_party/abseil-cpp)
-include_directories(${WEBRTC_INCLUDE_PATH}/third_party/libyuv/include)
+include_directories(SYSTEM ${WEBRTC_INCLUDE_PATH})
+include_directories(SYSTEM ${WEBRTC_INCLUDE_PATH}/third_party/abseil-cpp)
+include_directories(SYSTEM ${WEBRTC_INCLUDE_PATH}/third_party/libyuv/include)
 
 add_library(mediasoup-connector MODULE
 	${mediasoup-connector_SOURCES})
@@ -153,6 +154,7 @@ if(MSVC)
 
 elseif(APPLE)
 	target_compile_options(mediasoup-connector PRIVATE "-Wno-unused-parameter" "-Wno-deprecated-literal-operator")
+	target_compile_options(mediasoup-connector PRIVATE "-include" "${CMAKE_CURRENT_SOURCE_DIR}/absl_lifetime_patch.h")
 	set_target_xcode_properties(
 		mediasoup-connector
 		PROPERTIES WARNING_CFLAGS "-Wvla -Wformat-security -Wno-error=shorten-64-to-32 -Wno-error=deprecated-literal-operator")
