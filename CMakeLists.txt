@@ -76,9 +76,9 @@ set(webrtc-test_SOURCES
 	${WEBRTC_INCLUDE_PATH}/test/testsupport/ivf_video_frame_generator.cc
 	${WEBRTC_INCLUDE_PATH}/test/vcm_capturer.cc)
 	
-include_directories(SYSTEM ${WEBRTC_INCLUDE_PATH})
-include_directories(SYSTEM ${WEBRTC_INCLUDE_PATH}/third_party/abseil-cpp)
-include_directories(SYSTEM ${WEBRTC_INCLUDE_PATH}/third_party/libyuv/include)
+include_directories(${WEBRTC_INCLUDE_PATH})
+include_directories(${WEBRTC_INCLUDE_PATH}/third_party/abseil-cpp)
+include_directories(${WEBRTC_INCLUDE_PATH}/third_party/libyuv/include)
 
 add_library(webrtc-testlibs STATIC
 	${webrtc-test_SOURCES})
@@ -138,9 +138,9 @@ include_directories(${OPENSSL_INCLUDE_DIR})
 include_directories(${MEDIASOUP_INCLUDE_PATH})
 include_directories(${MEDIASOUP_SDP_INCLUDE_PATH})
 
-include_directories(SYSTEM ${WEBRTC_INCLUDE_PATH})
-include_directories(SYSTEM ${WEBRTC_INCLUDE_PATH}/third_party/abseil-cpp)
-include_directories(SYSTEM ${WEBRTC_INCLUDE_PATH}/third_party/libyuv/include)
+include_directories(${WEBRTC_INCLUDE_PATH})
+include_directories(${WEBRTC_INCLUDE_PATH}/third_party/abseil-cpp)
+include_directories(${WEBRTC_INCLUDE_PATH}/third_party/libyuv/include)
 
 add_library(mediasoup-connector MODULE
 	${mediasoup-connector_SOURCES})
