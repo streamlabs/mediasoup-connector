@@ -168,10 +168,10 @@ void MediaSoupMailbox::pop_outgoing_audioFrames(std::vector<std::unique_ptr<Soup
 						     framesPer10ms)) {
 				ptr->audio_data.resize(framesPer10ms * m_obs_numChannels);
 				for (int ch = 0; ch < ptr->numChannels; ++ch) {
-				const int16_t *src = ((int16_t **)array2d_int16_raw)[ch];
-				for (int f = 0; f < ptr->numFrames; ++f)
-					ptr->audio_data[f * ptr->numChannels + ch] = src[f];
-			}
+					const int16_t *src = ((int16_t **)array2d_int16_raw)[ch];
+					for (int f = 0; f < ptr->numFrames; ++f)
+						ptr->audio_data[f * ptr->numChannels + ch] = src[f];
+				}
 			}
 		}
 
@@ -189,10 +189,10 @@ void MediaSoupMailbox::pop_outgoing_audioFrames(std::vector<std::unique_ptr<Soup
 						     framesPer10ms)) {
 				ptr->audio_data.resize(framesPer10ms * m_obs_numChannels);
 				for (int ch = 0; ch < ptr->numChannels; ++ch) {
-				const int16_t *src = ((int16_t **)array2d_int16_raw)[ch];
-				for (int f = 0; f < ptr->numFrames; ++f)
-					ptr->audio_data[f * ptr->numChannels + ch] = src[f];
-			}
+					const int16_t *src = ((int16_t **)array2d_int16_raw)[ch];
+					for (int f = 0; f < ptr->numFrames; ++f)
+						ptr->audio_data[f * ptr->numChannels + ch] = src[f];
+				}
 			}
 		}
 

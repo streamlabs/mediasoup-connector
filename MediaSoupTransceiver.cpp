@@ -299,7 +299,7 @@ MediaSoupTransceiver::CreateProducerVideoTrack(rtc::scoped_refptr<webrtc::PeerCo
 					       std::shared_ptr<MediaSoupMailbox> ptr)
 {
 	auto videoTrackSource = webrtc::make_ref_counted<FrameGeneratorCapturerVideoTrackSource>(FrameGeneratorCapturerVideoTrackSource::Config(),
-												  webrtc::Clock::GetRealTimeClock(), false, ptr);
+												 webrtc::Clock::GetRealTimeClock(), false, ptr);
 	videoTrackSource->Start();
 
 	return factory->CreateVideoTrack(videoTrackSource, rtc::CreateRandomUuid());
