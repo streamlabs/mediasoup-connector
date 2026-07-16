@@ -1,5 +1,7 @@
 #pragma once
 
+#include "webrtc_compat.h"
+
 #include "pc/test/fake_audio_capture_module.h"
 #include "pc/test/fake_periodic_video_track_source.h"
 #include "pc/test/frame_generator_capturer_video_track_source.h"
@@ -16,7 +18,7 @@ public:
 
 	VideoFrameData NextFrame() override;
 
-	absl::optional<int> fps() const override;
+	std::optional<int> fps() const override;
 
 private:
 	const int m_width;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "webrtc_compat.h"
+
 #include "Device.hpp"
 #include "Logger.hpp"
 
@@ -154,7 +156,7 @@ private:
 	class MyAudioSink : public webrtc::AudioTrackSinkInterface, public GenericSink {
 	public:
 		void OnData(const void *audio_data, int bits_per_sample, int sample_rate, size_t number_of_channels, size_t number_of_frames,
-			    absl::optional<int64_t> absolute_capture_timestamp_ms) override;
+			    std::optional<int64_t> absolute_capture_timestamp_ms) override;
 	};
 
 	class MyVideoSink : public rtc::VideoSinkInterface<webrtc::VideoFrame>, public GenericSink {
@@ -164,7 +166,6 @@ private:
 
 	rtc::scoped_refptr<MyProducerAudioDeviceModule> m_MyProducerAudioDeviceModule;
 	rtc::scoped_refptr<webrtc::AudioDeviceModule> m_DefaultDeviceCore;
-	std::unique_ptr<webrtc::TaskQueueFactory> m_DefaultDeviceCore_TaskQueue;
 
 	// Producer
 private:

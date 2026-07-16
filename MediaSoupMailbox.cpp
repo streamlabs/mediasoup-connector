@@ -167,7 +167,11 @@ void MediaSoupMailbox::pop_outgoing_audioFrames(std::vector<std::unique_ptr<Soup
 			if (audio_resampler_resample(m_to_mediasoup_resampler, array2d_int16_raw, &numFrames, &tOffset, array2d_float_planar_raw,
 						     framesPer10ms)) {
 				ptr->audio_data.resize(framesPer10ms * m_obs_numChannels);
-				webrtc::Interleave((int16_t **)array2d_int16_raw, ptr->numFrames, ptr->numChannels, ptr->audio_data.data());
+				for (int ch = 0; ch < ptr->numChannels; ++ch) {
+				const int16_t *src = ((int16_t **)array2d_int16_raw)[ch];
+				for (int f = 0; f < ptr->numFrames; ++f)
+					ptr->audio_data[f * ptr->numChannels + ch] = src[f];
+			}
 			}
 		}
 
@@ -184,7 +188,11 @@ void MediaSoupMailbox::pop_outgoing_audioFrames(std::vector<std::unique_ptr<Soup
 			if (audio_resampler_resample(m_from_float_to_mediasoup_resampler, array2d_int16_raw, &numFrames, &tOffset, array2d_float_raw,
 						     framesPer10ms)) {
 				ptr->audio_data.resize(framesPer10ms * m_obs_numChannels);
-				webrtc::Interleave((int16_t **)array2d_int16_raw, ptr->numFrames, ptr->numChannels, ptr->audio_data.data());
+				for (int ch = 0; ch < ptr->numChannels; ++ch) {
+				const int16_t *src = ((int16_t **)array2d_int16_raw)[ch];
+				for (int f = 0; f < ptr->numFrames; ++f)
+					ptr->audio_data[f * ptr->numChannels + ch] = src[f];
+			}
 			}
 		}
 

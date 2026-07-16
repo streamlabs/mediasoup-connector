@@ -2,9 +2,8 @@
 
 set Z7_PATH="C:\Program Files\7-Zip"
 set ORIGINAL_WORK_DIR=%CD%
-set SCRIPT_FULL_FILENAME=%ORIGINAL_WORK_DIR%\%~n0%~x0
 set WEBRTC_FOLDER=%1
-set GIT_TAG=3.4.3
+set GIT_TAG=3.5.0
 set GIT_FOLDER_NAME=libmediasoupclient
 set GIT_FOLDER_PATH=%ORIGINAL_WORK_DIR%\%GIT_FOLDER_NAME%
 set BUILD_FOLDER_NAME=build
@@ -68,8 +67,6 @@ echo f | xcopy "%BUILD_FOLDER_PATH%\_deps\libsdptransform-build\RelWithDebInfo\s
 echo f | xcopy "%BUILD_FOLDER_PATH%\_deps\libsdptransform-build\RelWithDebInfo\sdptransform.pdb" "%PACKAGE_FOLDER_PATH%\lib\sdptransform.pdb" /yf
 
 echo f | xcopy "%BUILD_FOLDER_PATH%\_deps\libsdptransform-build\RelWithDebInfo\sdptransform.pdb" "%PACKAGE_FOLDER_PATH%\lib\sdptransform.pdb" /yf
-
-echo f | xcopy "%SCRIPT_FULL_FILENAME%" "%PACKAGE_FOLDER_PATH%" /yf
 
 :skip_copy
 

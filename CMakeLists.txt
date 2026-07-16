@@ -104,6 +104,8 @@ target_link_libraries(webrtc-testlibs
 
 set_property(TARGET webrtc-testlibs PROPERTY CXX_STANDARD 20)
 set_property(TARGET webrtc-testlibs PROPERTY CXX_STANDARD_REQUIRED ON)
+# Third-party webrtc test sources: /WX- above is overridden by CMAKE_COMPILE_WARNING_AS_ERROR, so disable per-target.
+set_property(TARGET webrtc-testlibs PROPERTY COMPILE_WARNING_AS_ERROR OFF)
 
 target_compile_definitions(webrtc-testlibs PUBLIC ${webrtc_COMMON_COMPILE_DEFS})
 
@@ -146,6 +148,9 @@ add_library(mediasoup-connector MODULE
 	${mediasoup-connector_SOURCES})
 
 add_library(OBS::mediasoup-connector ALIAS mediasoup-connector)
+
+# Includes webrtc headers (e.g. divide_round.h -> C4146); /WX- is overridden by CMAKE_COMPILE_WARNING_AS_ERROR.
+set_property(TARGET mediasoup-connector PROPERTY COMPILE_WARNING_AS_ERROR OFF)
 
 if(MSVC)
 	target_compile_options(mediasoup-connector PRIVATE "$<IF:$<CONFIG:Debug>,/MTd,/MT>" /wd4100)

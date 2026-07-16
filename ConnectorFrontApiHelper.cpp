@@ -47,6 +47,7 @@ bool ConnectorFrontApiHelper::createReceiver(const std::string &params, calldata
 
 bool ConnectorFrontApiHelper::createSender(const std::string &params, calldata_t *cd)
 {
+	blog(LOG_WARNING, "ConnectorFrontApiHelper::createSender called");
 	blog(LOG_DEBUG, "createSender start");
 
 	if (MediaSoupInterface::instance().getTransceiver()->SenderCreated()) {
@@ -297,6 +298,7 @@ bool ConnectorFrontApiHelper::createProducerTrack(const std::string &kind, calld
 
 bool ConnectorFrontApiHelper::createAudioProducerTrack(calldata_t *cd, const std::string &input)
 {
+	blog(LOG_WARNING, "ConnectorFrontApiHelper::createAudioProducerTrack called");
 	blog(LOG_DEBUG, "createAudioProducerTrack start");
 
 	if (!MediaSoupInterface::instance().getTransceiver()->SenderCreated()) {
@@ -309,6 +311,7 @@ bool ConnectorFrontApiHelper::createAudioProducerTrack(calldata_t *cd, const std
 
 bool ConnectorFrontApiHelper::createVideoProducerTrack(calldata_t *cd, const std::string &input)
 {
+	blog(LOG_WARNING, "ConnectorFrontApiHelper::createVideoProducerTrack called");
 	blog(LOG_DEBUG, "createVideoProducerTrack start");
 
 	if (!MediaSoupInterface::instance().getTransceiver()->SenderCreated()) {

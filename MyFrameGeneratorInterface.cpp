@@ -25,12 +25,12 @@ webrtc::test::FrameGeneratorInterface::VideoFrameData MyFrameGeneratorInterface:
 	if (!frames.empty())
 		m_lastFrame = frames[frames.size() - 1];
 
-	return VideoFrameData(m_lastFrame, absl::nullopt);
+	return VideoFrameData(m_lastFrame, std::nullopt);
 }
 
-absl::optional<int> MyFrameGeneratorInterface::fps() const
+std::optional<int> MyFrameGeneratorInterface::fps() const
 {
-	return absl::nullopt;
+	return std::nullopt;
 }
 
 FrameGeneratorCapturerVideoTrackSource::FrameGeneratorCapturerVideoTrackSource(Config config, webrtc::Clock *clock, bool is_screencast,

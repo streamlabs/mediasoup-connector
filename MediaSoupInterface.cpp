@@ -24,6 +24,7 @@ MediaSoupInterface::~MediaSoupInterface()
 
 void MediaSoupInterface::reset()
 {
+	blog(LOG_WARNING, "MediaSoupInterface::reset() called — recreating transceiver and clearing all waiting state");
 	resetThreadCache();
 
 	if (m_connectionThread != nullptr && m_connectionThread->joinable())
@@ -97,6 +98,7 @@ void MediaSoupInterface::joinWaitingThread()
 
 void MediaSoupInterface::resetThreadCache()
 {
+	blog(LOG_WARNING, "MediaSoupInterface::resetThreadCache() called");
 	m_connectWaiting = false;
 	m_produceWaiting = false;
 	m_threadInProgress = false;
