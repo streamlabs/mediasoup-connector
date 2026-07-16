@@ -206,7 +206,6 @@ bool MediaSoupTransceiver::CreateSender(const std::string &id, const json &icePa
 	std::lock_guard<std::recursive_mutex> grd(m_transportMutex);
 
 	if (m_sendTransport != nullptr) {
-		blog(LOG_WARNING, "MediaSoupTransceiver::CreateSender - Send transport ALREADY EXISTS");
 		m_lastErorMsg = "Send transport already exists";
 		return false;
 	}
@@ -300,7 +299,7 @@ MediaSoupTransceiver::CreateProducerVideoTrack(rtc::scoped_refptr<webrtc::PeerCo
 					       std::shared_ptr<MediaSoupMailbox> ptr)
 {
 	auto videoTrackSource = webrtc::make_ref_counted<FrameGeneratorCapturerVideoTrackSource>(FrameGeneratorCapturerVideoTrackSource::Config(),
-												  webrtc::Clock::GetRealTimeClock(), false, ptr);
+												 webrtc::Clock::GetRealTimeClock(), false, ptr);
 	videoTrackSource->Start();
 
 	return factory->CreateVideoTrack(videoTrackSource, rtc::CreateRandomUuid());
@@ -441,7 +440,6 @@ bool MediaSoupTransceiver::CreateVideoConsumer(const std::string &id, const std:
 // Update the already created remote transport with the local DTLS parameters.
 std::future<void> MediaSoupTransceiver::OnConnect(mediasoupclient::Transport *transport, const json &dtlsParameters)
 {
-	blog(LOG_WARNING, "MediaSoupTransceiver::OnConnect called (transportId=%s)", transport->GetId().c_str());
 	std::promise<void> promise;
 
 	if ((m_recvTransport && transport->GetId() == m_recvTransport->GetId()) || (m_sendTransport && transport->GetId() == m_sendTransport->GetId())) {
@@ -463,7 +461,6 @@ std::future<void> MediaSoupTransceiver::OnConnect(mediasoupclient::Transport *tr
 std::future<std::string> MediaSoupTransceiver::OnProduce(mediasoupclient::SendTransport *transport, const std::string &kind, nlohmann::json rtpParameters,
 							 const nlohmann::json &appData)
 {
-	blog(LOG_WARNING, "MediaSoupTransceiver::OnProduce called (kind=%s)", kind.c_str());
 	std::promise<std::string> promise;
 	std::string value;
 
