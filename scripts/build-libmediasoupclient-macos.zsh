@@ -5,7 +5,7 @@
 # 3. ./build-libmediasoupclient-macos.zsh --architecture=arm64 --webrtc-folder=THE_COMBINED_WEBRTC_INCLUDE_AND_LIB_FOLDER
 # 4. ./build-libmediasoupclient-macos.zsh --architecture=x86_64 --webrtc-folder=THE_COMBINED_WEBRTC_INCLUDE_AND_LIB_FOLDER
 
-download_libmediasoupclient() {    
+download_libmediasoupclient() {
     # Check if the webrtc folder exists
     if [ -d "${GIT_FOLDER}" ]
     then
@@ -61,7 +61,7 @@ build_libmediasoupclient() {
     then
         echo "### The '${BUILD_FOLDER}' folder exists. Configuring will be skiped. Remove the folder if you want to configure from scratch."
     else
-        cmake . -B"${BUILD_FOLDER}" -DLIBWEBRTC_INCLUDE_PATH="${WEBRTC_FOLDER}" -DLIBWEBRTC_BINARY_PATH="${WEBRTC_FOLDER}" -DCMAKE_OSX_ARCHITECTURES="${ARCHITECTURE}" -DCMAKE_OSX_DEPLOYMENT_TARGET=${MIN_MACOS_VERSION}
+        cmake . -B"${BUILD_FOLDER}" -DLIBWEBRTC_INCLUDE_PATH="${WEBRTC_FOLDER}" -DLIBWEBRTC_BINARY_PATH="${WEBRTC_FOLDER}" -DCMAKE_OSX_ARCHITECTURES="${ARCHITECTURE}" -DCMAKE_OSX_DEPLOYMENT_TARGET=${MIN_MACOS_VERSION} -DCMAKE_POLICY_VERSION_MINIMUM=3.5
         if [ $? -ne 0 ]
         then
             echo "### Could not configure to build for ${ARCHITECTURE}"
@@ -137,7 +137,7 @@ while [ $# -gt 0 ]; do
 done
 
 if [ -z "${WEBRTC_FOLDER}" ]; then
-    echo "### The webrtc include folder is not set. Please specify --webrtc-include-folder=..."
+    echo "### The webrtc include folder is not set. Please specify --webrtc-folder=..."
     exit 1
 fi
 
@@ -147,7 +147,7 @@ GIT_FOLDER_NAME=libmediasoupclient
 GIT_FOLDER=${PWD}/${GIT_FOLDER_NAME}
 BUILD_FOLDER_NAME=build-${ARCHITECTURE}
 BUILD_FOLDER=${GIT_FOLDER}/${BUILD_FOLDER_NAME}
-GIT_TAG=3.4.3
+GIT_TAG=3.5.0
 
 # Check if git is available
 if ! command -v git &> /dev/null
