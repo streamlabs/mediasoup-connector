@@ -36,7 +36,7 @@ download_webrtc() {
     # fetch --nohooks webrtc
     # gclient sync
     # cd src
-    # git checkout -b m120 refs/remotes/branch-heads/6099
+    # git checkout -b m140 refs/remotes/branch-heads/7339
     # gclient sync
 
     if [ -d "${SRC_PARENT_FOLDER}" ]
@@ -175,18 +175,43 @@ package_webrtc() {
     mkdir -p "${PACKAGE_FOLDER}"
 
     # Copy libs
+    echo "### Collecting object files from thin archives ..."
+    THIN_LIBS=(
+        "${BUILD_FOLDER}/obj/api/video_codecs/libbuiltin_video_decoder_factory.a"
+        "${BUILD_FOLDER}/obj/api/video_codecs/libbuiltin_video_encoder_factory.a"
+        "${BUILD_FOLDER}/obj/media/librtc_internal_video_codecs.a"
+        "${BUILD_FOLDER}/obj/media/librtc_simulcast_encoder_adapter.a"
+        "${BUILD_FOLDER}/obj/api/libfield_trials.a"
+        "${BUILD_FOLDER}/obj/api/video_codecs/librtc_software_fallback_wrappers.a"
+    )
+    EXTRA_OBJS=()
+    for LIB in "${THIN_LIBS[@]}"; do
+        if [ ! -f "${LIB}" ]
+        then
+            echo "### Missing required library: ${LIB}"
+            exit 1
+        fi
+        LIB_OBJS=()
+        while IFS= read -r OBJ; do
+            [[ -n "${OBJ}" ]] && LIB_OBJS+=("${OBJ}")
+        done < <(python3 "${SCRIPT_PATH%/*}/thin_archive_objs.py" "${LIB}")
+        if [ ${#LIB_OBJS[@]} -eq 0 ]
+        then
+            EXTRA_OBJS+=("${LIB}")
+        else
+            EXTRA_OBJS+=("${LIB_OBJS[@]}")
+        fi
+    done
+
     echo "### Copying libraries ..."
     libtool -static -o "${PACKAGE_FOLDER}/libwebrtc.a" \
         "${BUILD_FOLDER}/obj/libwebrtc.a" \
-        "${BUILD_FOLDER}/obj/api/video_codecs/libbuiltin_video_decoder_factory.a" \
-        "${BUILD_FOLDER}/obj/api/video_codecs/libbuiltin_video_encoder_factory.a" \
-        "${BUILD_FOLDER}/obj/media/librtc_internal_video_codecs.a" \
-        "${BUILD_FOLDER}/obj/media/librtc_simulcast_encoder_adapter.a"
+        "${EXTRA_OBJS[@]}"
 
     # Copy includes
     echo "### Copying includes ..."
     cd "${GIT_FOLDER}"
-    find . -name '*.h' -not -path "./out/*" -not -path "./third_party/depot_tools/*" | cpio -pdm "${PACKAGE_FOLDER}"
+    find . \( -name '*.h' -o -name '*.inc' \) -not -path "./out/*" -not -path "./third_party/depot_tools/*" | cpio -pdm "${PACKAGE_FOLDER}"
 
     # Copy some sources
     echo "### Copying some sources ..."
@@ -236,8 +261,8 @@ SRC_PARENT_FOLDER_NAME=webrtc-checkout
 SRC_PARENT_FOLDER=${PWD}/${SRC_PARENT_FOLDER_NAME}
 GIT_FOLDER_NAME=src
 GIT_FOLDER=${SRC_PARENT_FOLDER}/${GIT_FOLDER_NAME}
-GIT_REFS=refs/remotes/branch-heads/6099
-VERSION_NAME=m120
+GIT_REFS=refs/remotes/branch-heads/7339
+VERSION_NAME=m140
 BUILD_FOLDER_NAME=${VERSION_NAME}-${ARCHITECTURE}
 BUILD_FOLDER_REL=out/${BUILD_FOLDER_NAME}
 BUILD_FOLDER=${GIT_FOLDER}/${BUILD_FOLDER_REL}
