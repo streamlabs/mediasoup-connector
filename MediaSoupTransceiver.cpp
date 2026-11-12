@@ -932,16 +932,25 @@ void MediaSoupTransceiver::MyVideoSink::OnFrame(const webrtc::VideoFrame &video_
 void MediaSoupTransceiver::MyAudioSink::OnData(const void *audio_data, int bits_per_sample, int sample_rate, size_t number_of_channels, size_t number_of_frames,
 					       std::optional<int64_t> absolute_capture_timestamp_ms)
 {
+	// speaker_layout values equal the channel count, except 7 which has no layout
+	if (number_of_channels == 0 || number_of_channels > MAX_AV_PLANES || number_of_channels == 7)
+		return;
+
+	// WebRTC delivers interleaved samples, so only data[0] is used
+	obs_source_audio sdata = {};
 	size_t number_of_bytes = 0;
 
 	switch (bits_per_sample) {
 	case 8:
+		sdata.format = AUDIO_FORMAT_U8BIT;
 		number_of_bytes = number_of_channels * number_of_frames * sizeof(int8_t);
 		break;
 	case 16:
+		sdata.format = AUDIO_FORMAT_16BIT;
 		number_of_bytes = number_of_channels * number_of_frames * sizeof(int16_t);
 		break;
 	case 32:
+		sdata.format = AUDIO_FORMAT_32BIT;
 		number_of_bytes = number_of_channels * number_of_frames * sizeof(int32_t);
 		break;
 	default:
@@ -949,12 +958,10 @@ void MediaSoupTransceiver::MyAudioSink::OnData(const void *audio_data, int bits_
 	}
 
 	// Output to source
-	obs_source_audio sdata;
 	sdata.data[0] = (uint8_t *)audio_data;
 	sdata.frames = uint32_t(number_of_frames);
 	sdata.speakers = static_cast<speaker_layout>(number_of_channels);
 	sdata.samples_per_sec = sample_rate;
-	sdata.format = MediaSoupTransceiver::GetDefaultAudioFormat();
 
 	if (absolute_capture_timestamp_ms.has_value())
 		sdata.timestamp = absolute_capture_timestamp_ms.value();
